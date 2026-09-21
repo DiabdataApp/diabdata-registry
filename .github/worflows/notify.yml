@@ -1,0 +1,20 @@
+name: Notify relay on data update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'medical_devices.csv'
+      - 'medication_data.csv'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger rebuild on diab-data-relay
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.RELAY_DISPATCH_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/DiabdataApp/diab-data-relay/dispatches \
+            -d '{"event_type":"data-updated"}'
